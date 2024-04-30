@@ -8,6 +8,7 @@ const useSignup = () => {
 
 	const signup = async ({ fullName, username, password, confirmPassword, gender }) => {
 		const success = handleInputErrors({ fullName, username, password, confirmPassword, gender });
+
 		if (!success) return;
 
 		setLoading(true);
@@ -18,13 +19,22 @@ const useSignup = () => {
 				body: JSON.stringify({ fullName, username, password, confirmPassword, gender }),
 			});
 
+			if (!res.ok) {
+				console.log(res);
+                throw new Error(`HTTP error! Status: ${res.status}`);
+            }
+
+			console.log(`The res fetched is ${res} `);
 			const data = await res.json();
+			console.log(data);
+
 			if (data.error) {
 				throw new Error(data.error);
 			}
 			localStorage.setItem("chat-user", JSON.stringify(data));
 			setAuthUser(data);
 		} catch (error) {
+			console.log(error);
 			toast.error(error.message);
 		} finally {
 			setLoading(false);
